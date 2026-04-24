@@ -14,6 +14,7 @@ if [ -z "$SESSIONIZER_MAXDEPTH" ] && command -v tmux &>/dev/null; then
   SESSIONIZER_MAXDEPTH=$(tmux show-environment -g SESSIONIZER_MAXDEPTH 2>/dev/null | sed 's/^SESSIONIZER_MAXDEPTH=//')
 fi
 MAXDEPTH="${SESSIONIZER_MAXDEPTH:-3}"
+[[ "$MAXDEPTH" =~ ^[1-9][0-9]*$ ]] || MAXDEPTH=3
 
 if ! command -v fzf &>/dev/null; then
   echo "fzf is required for the sessionizer. Install it: https://github.com/junegunn/fzf"
