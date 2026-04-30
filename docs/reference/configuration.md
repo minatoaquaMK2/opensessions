@@ -132,6 +132,7 @@ All other tmux options fall back to the defaults shown in the table above.
 
 | Variable | Used by | Notes |
 | --- | --- | --- |
+| `DEVIN_CLI_DB_PATH` | Devin watcher | Overrides the default Devin CLI SQLite path |
 | `OPENCODE_DB_PATH` | OpenCode watcher | Overrides the default SQLite path |
 | `OPENSESSIONS_DIR` | tmux helper scripts and server | Helps helper scripts find the repo checkout |
 | `OPENSESSIONS_HOST` | helper shell scripts | Script-level override only; the app runtime still uses `127.0.0.1` |

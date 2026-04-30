@@ -27,6 +27,7 @@ export interface AgentWatcherContext {
  *   - amp: watches ~/.local/share/amp/threads/*.json
  *   - claude-code: watches ~/.claude/projects/ JSONL files
  *   - codex: watches ~/.codex/sessions/ JSONL transcripts
+ *   - devin: polls Devin CLI SQLite database
  *   - opencode: polls OpenCode SQLite database
  *   - pi: watches ~/.pi/agent/sessions/ JSONL transcripts
  *

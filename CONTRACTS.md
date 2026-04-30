@@ -6,7 +6,7 @@ For end-user setup, start with the docs linked from [README.md](./README.md). Fo
 
 ## Built-In Watchers
 
-opensessions currently registers four built-in watchers at server startup.
+opensessions currently registers six built-in watchers at server startup.
 
 ### Amp
 
@@ -32,12 +32,33 @@ opensessions currently registers four built-in watchers at server startup.
 - Resolves mux sessions from `turn_context.cwd` inside the transcript.
 - Treats `user_message`, tool activity, and assistant `commentary` as `running`, assistant `final_answer` and `task_complete` as `done`, and `turn_aborted` as `interrupted`.
 
+### Devin
+
+- Polls `~/.local/share/devin/cli/sessions.db` or `$DEVIN_CLI_DB_PATH`.
+- Uses `bun:sqlite` in read-only mode.
+- Polls every 3 seconds.
+- Skips sessions whose `last_activity_at` is older than 5 minutes (timestamps are stored in seconds).
+- Resolves mux sessions from the Devin session row's `working_directory` field.
+- Derives status from the head node referenced by `main_chain_id` in the `message_nodes` tree:
+  - `role=assistant` + `finish_reason=stop` → `done`
+  - `role=assistant` + `finish_reason=tool_calls` → `running`
+  - `role=user` / `role=tool` / streaming assistant → `running`
+  - `role=system` with content beginning `[Response interrupted by user]` → `interrupted`
+- Promotes `running` → `stale` when `last_activity_at` does not advance for 15 seconds (assumed process death).
+
 ### OpenCode
 
 - Polls `~/.local/share/opencode/opencode.db` or `$OPENCODE_DB_PATH`.
 - Uses `bun:sqlite` in read-only mode.
 - Polls every 3 seconds.
 - Resolves mux sessions from the OpenCode session row's `directory` field.
+
+### Pi
+
+- Watches `~/.pi/agent/sessions/<encoded-path>/<timestamp>_<id>.jsonl`.
+- Uses recursive `fs.watch` plus a 2 second polling pass.
+- Skips stale transcript files older than 5 minutes.
+- Resolves mux sessions from the `cwd` recorded on the `session` header entry.
 
 ## Agent Model
 

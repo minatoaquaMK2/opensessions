@@ -76,7 +76,7 @@ Then remove the `set -g @plugin 'Ataraxy-Labs/opensessions'` line from `~/.tmux.
 
 ## Today
 
-- Live agent state across sessions for Amp, Claude Code, Codex, and OpenCode.
+- Live agent state across sessions for Amp, Claude Code, Codex, Devin, OpenCode, and Pi.
 - Per-thread unseen markers for `done`, `error`, and `interrupted` states.
 - Session context in the UI: branch in the list, working directory in the detail panel, thread names, and detected localhost ports.
 - Programmatic metadata API: agents and scripts push status, progress, and logs to the sidebar via HTTP.
@@ -144,7 +144,9 @@ For the full tmux workflow with keybindings, troubleshooting, and configuration 
 - Amp watcher reads `~/.local/share/amp/threads/*.json` and clears unseen state from Amp's `session.json` when a thread becomes seen there.
 - Claude Code watcher reads JSONL transcripts in `~/.claude/projects/`.
 - Codex watcher reads transcript JSONL files in `~/.codex/sessions/` or `$CODEX_HOME/sessions/` and resolves sessions from `turn_context.cwd`.
+- Devin watcher polls the SQLite database in `~/.local/share/devin/cli/sessions.db` (override with `DEVIN_CLI_DB_PATH`) and resolves sessions from each row's `working_directory`.
 - OpenCode watcher polls the SQLite database in `~/.local/share/opencode/opencode.db`.
+- Pi watcher reads JSONL transcripts in `~/.pi/agent/sessions/`.
 - Hidden sidebars are stashed in a tmux session named `_os_stash`, so they can come back without restarting the sidebar process.
 - Clicking a detected port opens `http://localhost:<port>`.
 
