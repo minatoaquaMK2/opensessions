@@ -201,6 +201,9 @@ export class DevinAgentWatcher implements AgentWatcher {
     try { this.db?.close(); } catch {}
     this.db = null;
     this.ctx = null;
+    this.polling = false;
+    this.seeded = false;
+    this.sessions.clear();
   }
 
   /** Emit a status change event if we have a valid session mapping */
