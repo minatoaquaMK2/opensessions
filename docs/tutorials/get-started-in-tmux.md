@@ -43,7 +43,7 @@ set -g @plugin 'Ataraxy-Labs/opensessions'
 If you run from a local clone instead:
 
 ```tmux
-source-file /absolute/path/to/opensessions/opensessions.tmux
+run-shell /absolute/path/to/opensessions/opensessions.tmux
 ```
 
 If you added the TPM plugin line manually instead of using the one-line installer above, reload tmux and install plugins with:

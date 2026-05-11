@@ -96,13 +96,14 @@ if [ -n "$PREFIX_KEY" ]; then
   done
 fi
 
-# Direct prefix bindings for programmatic use (terminal emulator shortcuts).
-# C-s/C-t are single-byte Ctrl codes; M-1..9 are 2-byte Alt sequences.
+# Direct no-prefix bindings for programmatic use (terminal emulator shortcuts).
+# C-s/C-t are single-byte Ctrl codes; C-1..9 and M-1..9 switch sidebar sessions.
 # Both are safe to send as text from terminal emulators without timing issues.
-tmux bind-key C-s run-shell "sh '$SCRIPTS_DIR/focus.sh'"
-tmux bind-key C-t run-shell "sh '$SCRIPTS_DIR/toggle.sh'"
+tmux bind-key -n C-s run-shell "sh '$SCRIPTS_DIR/focus.sh'"
+tmux bind-key -n C-t run-shell "sh '$SCRIPTS_DIR/toggle.sh'"
 for i in 1 2 3 4 5 6 7 8 9; do
-  tmux bind-key "M-$i" run-shell "sh '$SCRIPTS_DIR/switch-index.sh' $i"
+  tmux bind-key -n "C-$i" run-shell "sh '$SCRIPTS_DIR/switch-index.sh' $i"
+  tmux bind-key -n "M-$i" run-shell "sh '$SCRIPTS_DIR/switch-index.sh' $i"
 done
 
 bind_global_key "$FOCUS_GLOBAL_KEY" "sh '$SCRIPTS_DIR/focus.sh'"

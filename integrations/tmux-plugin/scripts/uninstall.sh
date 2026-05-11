@@ -57,11 +57,12 @@ for i in 1 2 3 4 5 6 7 8 9; do
 done
 tmux unbind-key -T opensessions Any 2>/dev/null || true
 
-# Direct prefix bindings
-tmux unbind-key C-s 2>/dev/null || true
-tmux unbind-key C-t 2>/dev/null || true
+# Direct no-prefix bindings
+tmux unbind-key -n C-s 2>/dev/null || true
+tmux unbind-key -n C-t 2>/dev/null || true
 for i in 1 2 3 4 5 6 7 8 9; do
-  tmux unbind-key "M-$i" 2>/dev/null || true
+  tmux unbind-key -n "C-$i" 2>/dev/null || true
+  tmux unbind-key -n "M-$i" 2>/dev/null || true
 done
 
 # Global keys (if configured)

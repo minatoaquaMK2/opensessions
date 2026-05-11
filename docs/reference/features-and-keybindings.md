@@ -75,6 +75,10 @@ Clicking a detected port opens `http://localhost:<port>`.
 
 | Key | Action |
 | --- | --- |
+| `Ctrl-s` | Reveal and focus the sidebar pane from any tmux pane |
+| `Ctrl-t` | Toggle the sidebar from any tmux pane |
+| `Ctrl-1` through `Ctrl-9` | Switch directly to the visible session indices from any tmux pane |
+| `Alt-1` through `Alt-9` | Switch directly to the visible session indices from any tmux pane |
 | `prefix o → s` | Reveal and focus the sidebar pane |
 | `prefix o → t` | Toggle the sidebar |
 | `prefix o → e` | Spread non-sidebar panes in the current window using `even-horizontal` |

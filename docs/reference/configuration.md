@@ -87,7 +87,16 @@ The tmux integration reads these tmux options instead of `config.json`:
 | `@opensessions-index-keys` | unset | Optional space-separated no-prefix tmux keys mapped in order to visible sessions `1` through `9` |
 | `@opensessions-width` | `26` | exported as `OPENSESSIONS_WIDTH` by the tmux bootstrap script |
 
-The plugin registers these prefix bindings automatically:
+The plugin registers these no-prefix bindings automatically:
+
+| Binding | Action |
+| --- | --- |
+| `Ctrl-s` | Reveal and focus the sidebar |
+| `Ctrl-t` | Toggle the sidebar |
+| `Ctrl-1` through `Ctrl-9` | Switch to visible session by index |
+| `Alt-1` through `Alt-9` | Switch to visible session by index |
+
+It also registers these prefix command-table bindings:
 
 | Binding | Action |
 | --- | --- |
@@ -114,7 +123,7 @@ tmux source-file ~/.tmux.conf
 If you run from a local checkout instead, this is enough:
 
 ```tmux
-source-file /absolute/path/to/opensessions/opensessions.tmux
+run-shell /absolute/path/to/opensessions/opensessions.tmux
 ```
 
 Optional overrides:
