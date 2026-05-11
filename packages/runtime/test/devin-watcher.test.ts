@@ -378,6 +378,25 @@ describe("DevinAgentWatcher", () => {
     expect(events[0]!.status).toBe("running");
   });
 
+  test("reseeds and emits active sessions after stop/start restart", async () => {
+    insertSession("restart-raven", "/projects/myapp", "Restarted", 1);
+    insertNode("restart-raven", 1, null, { role: "user", content: "..." });
+
+    watcher.start(ctx);
+    await new Promise((r) => setTimeout(r, 200));
+    expect(events.length).toBe(1);
+
+    watcher.stop();
+    events = [];
+
+    watcher.start(ctx);
+    await new Promise((r) => setTimeout(r, 200));
+
+    expect(events.length).toBe(1);
+    expect(events[0]!.threadId).toBe("restart-raven");
+    expect(events[0]!.status).toBe("running");
+  });
+
   test("does not emit for new post-seed sessions stuck on a system prompt (idle)", async () => {
     watcher.start(ctx);
     await new Promise((r) => setTimeout(r, 200));
