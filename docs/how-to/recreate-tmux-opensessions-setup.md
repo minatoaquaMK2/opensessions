@@ -15,8 +15,31 @@ This note captures the local setup used in this workspace so it can be copied to
 
 - `tmux` 3.4 or newer
 - `bun` on `PATH`
-- TPM installed at `~/.tmux/plugins/tpm` for plugin management
+- TPM installed at `~/.tmux/plugins/tpm` for third-party tmux plugin management:
+
+  ```bash
+  git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
+  ```
+
 - Local opensessions checkout at `/home/mystic/eric/opensessions`
+
+## opensessions source
+
+Load opensessions from this repo checkout, not from TPM's remote plugin install path. This matters because this checkout contains local commits that are not in `Ataraxy-Labs/opensessions`.
+
+On another machine, clone or copy this repo first, then replace `/home/mystic/eric/opensessions` everywhere below with that local checkout path.
+
+Do not enable this line in `~/.tmux.conf` when reproducing this setup:
+
+```tmux
+set -g @plugin 'Ataraxy-Labs/opensessions'
+```
+
+Use this local loader instead:
+
+```tmux
+run-shell "/path/to/local/opensessions/opensessions.tmux"
+```
 
 ## opensessions config
 
@@ -43,7 +66,7 @@ If your existing config already has other fields, keep them and only set:
 
 ## tmux config
 
-Add this to `~/.tmux.conf`. If your checkout lives somewhere else, replace `/home/mystic/eric/opensessions` with that path.
+Add this to `~/.tmux.conf`. If your checkout lives somewhere else, replace `/home/mystic/eric/opensessions` with that path. The TPM plugin list below is only for third-party tmux plugins; opensessions itself is loaded from the local `run-shell` line.
 
 ```tmux
 # List of plugins
@@ -120,7 +143,7 @@ SH
 chmod +x ~/.tmux/bin/tmux-set-clipboard
 ```
 
-The important part is that `Ataraxy-Labs/opensessions` is commented out and the local checkout is loaded with `run-shell`.
+The important part is that `Ataraxy-Labs/opensessions` stays commented out and the local checkout is loaded with `run-shell`.
 
 ## Shortcut behavior
 
@@ -138,7 +161,7 @@ The sidebar index is the visible opensessions list order, not the tmux window ta
 
 If another machine uses an older opensessions checkout that does not yet bind `Alt-1` through `Alt-9`, add these fallback lines to `~/.tmux.conf`.
 
-For TPM's default install path:
+For a local checkout placed at `~/.tmux/plugins/opensessions`:
 
 ```tmux
 bind-key -n C-s run-shell "sh ~/.tmux/plugins/opensessions/integrations/tmux-plugin/scripts/focus.sh"
