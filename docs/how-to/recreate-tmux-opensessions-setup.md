@@ -52,6 +52,18 @@ set -g @plugin 'tmux-plugins/tpm'
 # set -g @plugin 'Ataraxy-Labs/opensessions'
 set -g @plugin 'tmux-plugins/tmux-sensible'
 
+# Use Ctrl-a as the tmux prefix.
+unbind C-b
+set -g prefix C-a
+bind C-a send-prefix
+
+# General tmux ergonomics.
+set -g mouse on
+set -g history-limit 100000
+setw -g mode-keys vi
+set -s escape-time 0
+bind r source-file ~/.tmux.conf \; display-message "tmux.conf reloaded"
+
 # Top tab bar, tuned to pair with opensessions.
 set -g status on
 set -g status-position top
