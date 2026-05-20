@@ -36,10 +36,44 @@ export class AgentTracker {
   private eventTimestamps = new Map<string, number[]>();
   // Per-instance unseen tracking: "session\0instanceKey"
   private unseenInstances = new Set<string>();
+  // User-dismissed pane-only entries should not be recreated by the next
+  // 3s pane scan. Real watcher events are still allowed through.
+  private dismissedSyntheticPanes = new Set<string>();
   private active = new Set<string>();
 
   private unseenKey(session: string, key: string): string {
     return `${session}\0${key}`;
+  }
+
+  private dismissedSyntheticPaneKey(session: string, agent: string, paneId: string, threadId?: string): string {
+    return `${session}\0${agent}\0${paneId}\0${threadId ?? ""}`;
+  }
+
+  private isSyntheticPaneDismissed(session: string, agent: string, paneId: string, threadId?: string): boolean {
+    return this.dismissedSyntheticPanes.has(this.dismissedSyntheticPaneKey(session, agent, paneId))
+      || (threadId ? this.dismissedSyntheticPanes.has(this.dismissedSyntheticPaneKey(session, agent, paneId, threadId)) : false);
+  }
+
+  private dismissSyntheticPane(session: string, agent: string, paneId: string, threadId?: string): void {
+    this.dismissedSyntheticPanes.add(this.dismissedSyntheticPaneKey(session, agent, paneId));
+    if (threadId) {
+      this.dismissedSyntheticPanes.add(this.dismissedSyntheticPaneKey(session, agent, paneId, threadId));
+    }
+  }
+
+  private clearInactiveSyntheticDismissals(session: string, paneAgents: PanePresenceInput[]): void {
+    const activeKeys = new Set<string>();
+    for (const pa of paneAgents) {
+      activeKeys.add(this.dismissedSyntheticPaneKey(session, pa.agent, pa.paneId));
+      if (pa.threadId) activeKeys.add(this.dismissedSyntheticPaneKey(session, pa.agent, pa.paneId, pa.threadId));
+    }
+
+    const prefix = `${session}\0`;
+    for (const key of [...this.dismissedSyntheticPanes]) {
+      if (key.startsWith(prefix) && !activeKeys.has(key)) {
+        this.dismissedSyntheticPanes.delete(key);
+      }
+    }
   }
 
   applyEvent(event: AgentEvent, options?: { seed?: boolean }): void {
@@ -167,13 +201,20 @@ export class AgentTracker {
     return true;
   }
 
-  dismiss(session: string, agent: string, threadId?: string): boolean {
+  dismiss(session: string, agent: string, threadId?: string, paneId?: string): boolean {
     const sessionInstances = this.instances.get(session);
     if (!sessionInstances) return false;
 
     const exactKey = instanceKey(agent, threadId);
-    let removed = sessionInstances.delete(exactKey);
-    if (removed) this.unseenInstances.delete(this.unseenKey(session, exactKey));
+    const exactEvent = sessionInstances.get(exactKey);
+    let removed = false;
+    if (exactEvent && (!paneId || exactEvent.paneId === paneId)) {
+      removed = sessionInstances.delete(exactKey);
+      this.unseenInstances.delete(this.unseenKey(session, exactKey));
+      if (exactEvent.paneId) {
+        this.dismissSyntheticPane(session, agent, exactEvent.paneId, threadId);
+      }
+    }
 
     // Also remove any synthetic pane-backed entries matching (agent, threadId).
     // These have keys like `agent:threadId:pane:paneId` (or `agent:pane:paneId`
@@ -182,12 +223,19 @@ export class AgentTracker {
       if (!isSyntheticPaneKey(k)) continue;
       if (event.agent !== agent) continue;
       if (event.threadId !== threadId) continue;
+      if (paneId && event.paneId !== paneId) continue;
       sessionInstances.delete(k);
       this.unseenInstances.delete(this.unseenKey(session, k));
+      if (event.paneId) {
+        this.dismissSyntheticPane(session, event.agent, event.paneId, event.threadId);
+      }
       removed = true;
     }
 
     if (!removed) return false;
+    if (paneId) {
+      this.dismissSyntheticPane(session, agent, paneId, threadId);
+    }
     if (sessionInstances.size === 0) {
       this.instances.delete(session);
     }
@@ -304,6 +352,7 @@ export class AgentTracker {
   applyPanePresence(session: string, paneAgents: PanePresenceInput[]): boolean {
     let changed = false;
     let sessionInstances = this.instances.get(session);
+    this.clearInactiveSyntheticDismissals(session, paneAgents);
 
     // Index incoming pane IDs and (agent, threadId) tuples for fast lookup.
     // When the scanner can resolve threadIds for an agent (currently only Pi),
@@ -383,6 +432,10 @@ export class AgentTracker {
           continue;
         }
 
+        if (this.isSyntheticPaneDismissed(session, pa.agent, pa.paneId, pa.threadId)) {
+          continue;
+        }
+
         if (sessionInstances.delete(genericSyntheticKey)) {
           this.unseenInstances.delete(this.unseenKey(session, genericSyntheticKey));
         }
@@ -404,7 +457,26 @@ export class AgentTracker {
         .filter(([k, ev]) => ev.agent === pa.agent && !isSyntheticPaneKey(k));
 
       if (watcherEntries.length === 1) {
-        stampAlive(watcherEntries[0]![1]);
+        const watcherEntry = watcherEntries[0]![1];
+        stampAlive(watcherEntry);
+        const syntheticKey = syntheticPaneKey(pa.agent, pa.paneId);
+        if (sessionInstances.delete(syntheticKey)) {
+          this.unseenInstances.delete(this.unseenKey(session, syntheticKey));
+          changed = true;
+        }
+        continue;
+      }
+
+      if (watcherEntries.length > 1) {
+        const syntheticKey = syntheticPaneKey(pa.agent, pa.paneId);
+        if (sessionInstances.delete(syntheticKey)) {
+          this.unseenInstances.delete(this.unseenKey(session, syntheticKey));
+          changed = true;
+        }
+        continue;
+      }
+
+      if (this.isSyntheticPaneDismissed(session, pa.agent, pa.paneId)) {
         continue;
       }
 
@@ -423,6 +495,10 @@ export class AgentTracker {
       } else {
         stampAlive(existing);
       }
+    }
+
+    if (sessionInstances?.size === 0) {
+      this.instances.delete(session);
     }
 
     return changed;
