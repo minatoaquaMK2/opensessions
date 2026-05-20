@@ -24,6 +24,7 @@ export interface AgentWatcherContext {
  * external data sources (thread files, databases, etc).
  *
  * Implementations:
+ *   - antigravity: watches ~/.gemini/antigravity-cli history/log files
  *   - amp: watches ~/.local/share/amp/threads/*.json
  *   - claude-code: watches ~/.claude/projects/ JSONL files
  *   - codex: watches ~/.codex/sessions/ JSONL transcripts

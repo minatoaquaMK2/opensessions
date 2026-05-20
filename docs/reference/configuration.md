@@ -140,6 +140,7 @@ All other tmux options fall back to the defaults shown in the table above.
 
 | Variable | Used by | Notes |
 | --- | --- | --- |
+| `ANTIGRAVITY_CLI_DIR` | Antigravity CLI watcher | Overrides the default `~/.gemini/antigravity-cli` data directory |
 | `DEVIN_CLI_DB_PATH` | Devin watcher | Overrides the default Devin CLI SQLite path |
 | `OPENCODE_DB_PATH` | OpenCode watcher | Overrides the default SQLite path |
 | `OPENSESSIONS_DIR` | tmux helper scripts and server | Helps helper scripts find the repo checkout |

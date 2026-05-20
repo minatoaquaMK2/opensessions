@@ -1492,6 +1492,7 @@ export function startServer(mux: MuxProvider, extraProviders?: MuxProvider[], wa
   }
 
   const AGENT_TITLE_PATTERNS: Record<string, string[]> = {
+    antigravity: ["agy", "antigravity"],
     amp: ["amp"],
     "claude-code": ["claude"],
     codex: ["codex"],

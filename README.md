@@ -76,7 +76,7 @@ Then remove the `set -g @plugin 'Ataraxy-Labs/opensessions'` line from `~/.tmux.
 
 ## Today
 
-- Live agent state across sessions for Amp, Claude Code, Codex, Devin, OpenCode, and Pi.
+- Live agent state across sessions for Antigravity CLI (`agy`), Amp, Claude Code, Codex, Devin, OpenCode, and Pi.
 - Per-thread unseen markers for `done`, `error`, and `interrupted` states.
 - Session context in the UI: branch in the list, working directory in the detail panel, thread names, and detected localhost ports.
 - Programmatic metadata API: agents and scripts push status, progress, and logs to the sidebar via HTTP.
@@ -141,6 +141,7 @@ For the full tmux workflow with keybindings, troubleshooting, and configuration 
 ## A Few Concrete Bits
 
 - Session ordering is persisted in `~/.config/opensessions/session-order.json`.
+- Antigravity CLI (`agy`) watcher reads `~/.gemini/antigravity-cli/history.jsonl` and `log/*.log` (override with `ANTIGRAVITY_CLI_DIR`) and resolves sessions from each history entry's `workspace`.
 - Amp watcher reads `~/.local/share/amp/threads/*.json` and clears unseen state from Amp's `session.json` when a thread becomes seen there.
 - Claude Code watcher reads JSONL transcripts in `~/.claude/projects/`.
 - Codex watcher reads transcript JSONL files in `~/.codex/sessions/` or `$CODEX_HOME/sessions/` and resolves sessions from `turn_context.cwd`.

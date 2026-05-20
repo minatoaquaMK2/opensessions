@@ -19,7 +19,7 @@ If no healthy server is listening on `127.0.0.1:7391`, `ensureServer()` launches
 2. dynamically registers the built-in mux providers from `@opensessions/mux-tmux` and `@opensessions/mux-zellij`
 3. loads local plugins and configured package plugins
 4. resolves the primary mux provider
-5. registers the built-in Amp, Claude Code, Codex, Devin, OpenCode, and Pi watchers
+5. registers the built-in Antigravity CLI (`agy`), Amp, Claude Code, Codex, Devin, OpenCode, and Pi watchers
 6. starts the WebSocket and HTTP control server
 
 ## State Assembly

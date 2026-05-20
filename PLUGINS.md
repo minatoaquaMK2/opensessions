@@ -6,7 +6,7 @@ This guide is intentionally task-oriented. For the exact TypeScript contracts, s
 
 ## Before You Start
 
-The easiest way to iterate is with a local plugin in `~/.config/opensessions/plugins/`. Package-based plugins are supported too, but local files remove package resolution friction while you are developing. Amp, Claude Code, Codex, and OpenCode already ship as built-in watchers, so plugins are only needed for additional agents or mux providers.
+The easiest way to iterate is with a local plugin in `~/.config/opensessions/plugins/`. Package-based plugins are supported too, but local files remove package resolution friction while you are developing. Antigravity CLI (`agy`), Amp, Claude Code, Codex, Devin, OpenCode, and Pi already ship as built-in watchers, so plugins are only needed for additional agents or mux providers.
 
 Every plugin exports a default function:
 
@@ -221,7 +221,7 @@ These are conventions, not runtime requirements:
 - Local plugins can be `.ts` or `.js` files.
 - Directory plugins need an `index.ts` or `index.js` entrypoint.
 - The current runtime passes fixed server host and port values through `PluginAPI`.
-- Built-in watchers already cover Amp, Claude Code, and OpenCode, so new watcher work is usually for unsupported agents.
+- Built-in watchers already cover Antigravity CLI (`agy`), Amp, Claude Code, Codex, Devin, OpenCode, and Pi, so new watcher work is usually for unsupported agents.
 
 ## Related Docs
 
