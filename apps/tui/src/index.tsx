@@ -399,6 +399,7 @@ function App() {
       session: data.name,
       agent: agent.agent,
       threadId: agent.threadId,
+      paneId: agent.paneId,
     });
     // Adjust index if we dismissed the last item
     if (focusedAgentIdx() >= agents.length - 1 && agents.length > 1) {
@@ -978,6 +979,7 @@ function App() {
                   session: data().name,
                   agent: agent.agent,
                   threadId: agent.threadId,
+                  paneId: agent.paneId,
                 });
               }}
               onFocusAgentPane={(agent) => {

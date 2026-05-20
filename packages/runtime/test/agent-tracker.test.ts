@@ -144,6 +144,53 @@ describe("AgentTracker", () => {
     expect(remaining[0]!.threadId).toBe("live");
   });
 
+  test("dismiss suppresses pane scanner recreation for synthetic live agents", () => {
+    tracker.applyPanePresence("sess-1", [
+      { agent: "claude-code", paneId: "%5" },
+    ]);
+    expect(tracker.getAgents("sess-1")).toHaveLength(1);
+
+    const dismissed = tracker.dismiss("sess-1", "claude-code", undefined, "%5");
+
+    expect(dismissed).toBe(true);
+    expect(tracker.getAgents("sess-1")).toHaveLength(0);
+
+    const changed = tracker.applyPanePresence("sess-1", [
+      { agent: "claude-code", paneId: "%5" },
+    ]);
+
+    expect(changed).toBe(false);
+    expect(tracker.getAgents("sess-1")).toHaveLength(0);
+  });
+
+  test("watcher activity after dismiss restores a hidden live agent", () => {
+    tracker.applyEvent(event({ session: "sess-1", agent: "codex", threadId: "t1", status: "running" }));
+    tracker.applyPanePresence("sess-1", [
+      { agent: "codex", paneId: "%7" },
+    ]);
+
+    const dismissed = tracker.dismiss("sess-1", "codex", "t1", "%7");
+
+    expect(dismissed).toBe(true);
+    expect(tracker.getAgents("sess-1")).toHaveLength(0);
+
+    tracker.applyPanePresence("sess-1", [
+      { agent: "codex", paneId: "%7" },
+    ]);
+    expect(tracker.getAgents("sess-1")).toHaveLength(0);
+
+    tracker.applyEvent(event({ session: "sess-1", agent: "codex", threadId: "t1", status: "done" }));
+    tracker.applyPanePresence("sess-1", [
+      { agent: "codex", paneId: "%7" },
+    ]);
+
+    const agents = tracker.getAgents("sess-1");
+    expect(agents).toHaveLength(1);
+    expect(agents[0]!.threadId).toBe("t1");
+    expect(agents[0]!.status).toBe("done");
+    expect(agents[0]!.paneId).toBe("%7");
+  });
+
   test("dedupeInstanceToSession removes duplicate watcher instance from other sessions", () => {
     tracker.applyEvent(event({ session: "sess-1", agent: "pi", threadId: "shared", status: "running" }));
     tracker.applyEvent(event({ session: "sess-2", agent: "pi", threadId: "shared", status: "running" }));

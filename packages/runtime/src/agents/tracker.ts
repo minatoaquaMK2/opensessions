@@ -36,14 +36,43 @@ export class AgentTracker {
   private eventTimestamps = new Map<string, number[]>();
   // Per-instance unseen tracking: "session\0instanceKey"
   private unseenInstances = new Set<string>();
+  // Dismissed live agents should stay hidden from pane scans until a watcher
+  // emits a fresh state for the same instance. Otherwise a 3s pane scan can
+  // immediately recreate the item the user just dismissed.
+  private dismissedInstances = new Set<string>();
+  private dismissedPanes = new Set<string>();
   private active = new Set<string>();
 
   private unseenKey(session: string, key: string): string {
     return `${session}\0${key}`;
   }
 
+  private dismissedInstanceKey(session: string, agent: string, threadId?: string): string {
+    return this.unseenKey(session, instanceKey(agent, threadId));
+  }
+
+  private dismissedPaneKey(session: string, agent: string, paneId: string, threadId?: string): string {
+    return this.unseenKey(session, syntheticPaneKey(agent, paneId, threadId));
+  }
+
+  private isInstanceDismissed(session: string, agent: string, threadId?: string): boolean {
+    return this.dismissedInstances.has(this.dismissedInstanceKey(session, agent, threadId));
+  }
+
+  private isPaneDismissed(session: string, agent: string, paneId: string, threadId?: string): boolean {
+    return this.dismissedPanes.has(this.dismissedPaneKey(session, agent, paneId))
+      || (threadId ? this.dismissedPanes.has(this.dismissedPaneKey(session, agent, paneId, threadId)) : false);
+  }
+
   applyEvent(event: AgentEvent, options?: { seed?: boolean }): void {
     const key = instanceKey(event.agent, event.threadId);
+    this.dismissedInstances.delete(this.unseenKey(event.session, key));
+    if (event.paneId) {
+      this.dismissedPanes.delete(this.dismissedPaneKey(event.session, event.agent, event.paneId));
+      if (event.threadId) {
+        this.dismissedPanes.delete(this.dismissedPaneKey(event.session, event.agent, event.paneId, event.threadId));
+      }
+    }
 
     // Store instance
     let sessionInstances = this.instances.get(event.session);
@@ -167,7 +196,7 @@ export class AgentTracker {
     return true;
   }
 
-  dismiss(session: string, agent: string, threadId?: string): boolean {
+  dismiss(session: string, agent: string, threadId?: string, paneId?: string): boolean {
     const sessionInstances = this.instances.get(session);
     if (!sessionInstances) return false;
 
@@ -182,12 +211,20 @@ export class AgentTracker {
       if (!isSyntheticPaneKey(k)) continue;
       if (event.agent !== agent) continue;
       if (event.threadId !== threadId) continue;
+      if (paneId && event.paneId !== paneId) continue;
       sessionInstances.delete(k);
       this.unseenInstances.delete(this.unseenKey(session, k));
       removed = true;
     }
 
     if (!removed) return false;
+    this.dismissedInstances.add(this.dismissedInstanceKey(session, agent, threadId));
+    if (paneId) {
+      this.dismissedPanes.add(this.dismissedPaneKey(session, agent, paneId));
+      if (threadId) {
+        this.dismissedPanes.add(this.dismissedPaneKey(session, agent, paneId, threadId));
+      }
+    }
     if (sessionInstances.size === 0) {
       this.instances.delete(session);
     }
@@ -361,7 +398,9 @@ export class AgentTracker {
         const exactKey = instanceKey(pa.agent, pa.threadId);
         const exactEvent = sessionInstances.get(exactKey);
         if (exactEvent) {
-          stampAlive(exactEvent);
+          if (!this.isInstanceDismissed(session, pa.agent, pa.threadId)) {
+            stampAlive(exactEvent);
+          }
 
           // Drop any synthetic for the same pane now that we have an exact watcher entry.
           const genericSyntheticKey = syntheticPaneKey(pa.agent, pa.paneId);
@@ -372,6 +411,11 @@ export class AgentTracker {
           if (sessionInstances.delete(exactSyntheticKey)) {
             this.unseenInstances.delete(this.unseenKey(session, exactSyntheticKey));
           }
+          continue;
+        }
+
+        if (this.isInstanceDismissed(session, pa.agent, pa.threadId)
+          || this.isPaneDismissed(session, pa.agent, pa.paneId, pa.threadId)) {
           continue;
         }
 
@@ -404,9 +448,14 @@ export class AgentTracker {
         .filter(([k, ev]) => ev.agent === pa.agent && !isSyntheticPaneKey(k));
 
       if (watcherEntries.length === 1) {
-        stampAlive(watcherEntries[0]![1]);
+        const watcherEntry = watcherEntries[0]![1];
+        if (!this.isInstanceDismissed(session, watcherEntry.agent, watcherEntry.threadId)) {
+          stampAlive(watcherEntry);
+        }
         continue;
       }
+
+      if (this.isPaneDismissed(session, pa.agent, pa.paneId)) continue;
 
       const syntheticKey = syntheticPaneKey(pa.agent, pa.paneId);
       const existing = sessionInstances.get(syntheticKey);

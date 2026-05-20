@@ -2056,7 +2056,7 @@ export function startServer(mux: MuxProvider, extraProviders?: MuxProvider[], wa
         if (tracker.markSeen(cmd.name)) broadcastState();
         break;
       case "dismiss-agent":
-        if (tracker.dismiss(cmd.session, cmd.agent, cmd.threadId)) broadcastState();
+        if (tracker.dismiss(cmd.session, cmd.agent, cmd.threadId, cmd.paneId)) broadcastState();
         break;
       case "set-theme":
         currentTheme = cmd.theme;
