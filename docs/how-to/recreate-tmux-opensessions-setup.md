@@ -51,6 +51,20 @@ set -g @plugin 'tmux-plugins/tpm'
 # Use the local checkout instead of the TPM-installed GitHub copy.
 # set -g @plugin 'Ataraxy-Labs/opensessions'
 set -g @plugin 'tmux-plugins/tmux-sensible'
+set -g @plugin 'tmux-plugins/tmux-yank'
+set -g @plugin 'tmux-plugins/tmux-resurrect'
+set -g @plugin 'tmux-plugins/tmux-continuum'
+set -g @plugin 'tmux-plugins/tmux-copycat'
+set -g @plugin 'tmux-plugins/tmux-open'
+
+# tmux-yank: send mouse/yank selections to the system clipboard.
+set -s set-clipboard on
+set -g @override_copy_command '/home/mystic/.tmux/bin/tmux-set-clipboard'
+set -g @yank_selection 'clipboard'
+set -g @yank_selection_mouse 'clipboard'
+
+# tmux-continuum: restore the last resurrect save on tmux startup.
+set -g @continuum-restore 'on'
 
 # Use Ctrl-a as the tmux prefix.
 unbind C-b
@@ -91,6 +105,19 @@ run-shell "/home/mystic/eric/opensessions/opensessions.tmux"
 
 # Initialize TMUX plugin manager. Keep this line at the very bottom.
 run '~/.tmux/plugins/tpm/tpm'
+```
+
+Create the clipboard helper used by `tmux-yank`:
+
+```bash
+mkdir -p ~/.tmux/bin
+cat > ~/.tmux/bin/tmux-set-clipboard <<'SH'
+#!/usr/bin/env sh
+
+payload=$(cat)
+tmux set-buffer -w -- "$payload"
+SH
+chmod +x ~/.tmux/bin/tmux-set-clipboard
 ```
 
 The important part is that `Ataraxy-Labs/opensessions` is commented out and the local checkout is loaded with `run-shell`.
@@ -145,6 +172,13 @@ If the plugin is already installed, this is enough:
 tmux source-file ~/.tmux.conf
 ```
 
+After adding new TPM plugins, run the install command once:
+
+```bash
+~/.tmux/plugins/tpm/bin/install_plugins
+tmux source-file ~/.tmux.conf
+```
+
 ## Verify
 
 Check the top bar:
@@ -167,6 +201,25 @@ tmux list-keys -T root | rg "C-s|C-t|M-[1-9].*switch-index"
 ```
 
 You should see `C-s`, `C-t`, and `M-1` through `M-9`. You should not see `C-1` through `C-9` for opensessions.
+
+Check tmux plugin bindings and clipboard helper:
+
+```bash
+tmux list-keys -T prefix C-s
+tmux list-keys -T prefix C-r
+tmux list-keys -T copy-mode-vi y
+printf 'clipboard test' | ~/.tmux/bin/tmux-set-clipboard
+tmux show-buffer
+```
+
+Expected:
+
+```text
+prefix C-s saves the tmux environment
+prefix C-r restores the tmux environment
+copy-mode-vi y pipes through ~/.tmux/bin/tmux-set-clipboard
+clipboard test
+```
 
 ## Terminal caveats
 
