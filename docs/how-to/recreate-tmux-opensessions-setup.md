@@ -9,8 +9,7 @@ This note captures the local setup used in this workspace so it can be copied to
 - tmux window tabs shown in the top status bar
 - `Ctrl-s` focuses/opens the opensessions sidebar
 - `Ctrl-t` toggles the opensessions sidebar
-- `Ctrl-1` through `Ctrl-9` switch to opensessions sidebar sessions by visible index
-- `Alt-1` through `Alt-9` remain available as a fallback
+- `Alt-1` through `Alt-9` switch to opensessions sidebar sessions by visible index
 
 ## Prerequisites
 
@@ -91,7 +90,6 @@ With the current opensessions plugin in this workspace, these are registered by 
 ```text
 Ctrl-s       focus/open sidebar
 Ctrl-t       toggle sidebar
-Ctrl-1..9    switch to sidebar session index 1..9
 Alt-1..9     switch to sidebar session index 1..9
 ```
 
@@ -99,7 +97,7 @@ The sidebar index is the visible opensessions list order, not the tmux window ta
 
 ## Older plugin fallback
 
-If another machine uses an older opensessions checkout that does not yet bind `Ctrl-1` through `Ctrl-9`, add these fallback lines to `~/.tmux.conf`.
+If another machine uses an older opensessions checkout that does not yet bind `Alt-1` through `Alt-9`, add these fallback lines to `~/.tmux.conf`.
 
 For TPM's default install path:
 
@@ -107,15 +105,15 @@ For TPM's default install path:
 bind-key -n C-s run-shell "sh ~/.tmux/plugins/opensessions/integrations/tmux-plugin/scripts/focus.sh"
 bind-key -n C-t run-shell "sh ~/.tmux/plugins/opensessions/integrations/tmux-plugin/scripts/toggle.sh"
 
-bind-key -n C-1 run-shell "sh ~/.tmux/plugins/opensessions/integrations/tmux-plugin/scripts/switch-index.sh 1"
-bind-key -n C-2 run-shell "sh ~/.tmux/plugins/opensessions/integrations/tmux-plugin/scripts/switch-index.sh 2"
-bind-key -n C-3 run-shell "sh ~/.tmux/plugins/opensessions/integrations/tmux-plugin/scripts/switch-index.sh 3"
-bind-key -n C-4 run-shell "sh ~/.tmux/plugins/opensessions/integrations/tmux-plugin/scripts/switch-index.sh 4"
-bind-key -n C-5 run-shell "sh ~/.tmux/plugins/opensessions/integrations/tmux-plugin/scripts/switch-index.sh 5"
-bind-key -n C-6 run-shell "sh ~/.tmux/plugins/opensessions/integrations/tmux-plugin/scripts/switch-index.sh 6"
-bind-key -n C-7 run-shell "sh ~/.tmux/plugins/opensessions/integrations/tmux-plugin/scripts/switch-index.sh 7"
-bind-key -n C-8 run-shell "sh ~/.tmux/plugins/opensessions/integrations/tmux-plugin/scripts/switch-index.sh 8"
-bind-key -n C-9 run-shell "sh ~/.tmux/plugins/opensessions/integrations/tmux-plugin/scripts/switch-index.sh 9"
+bind-key -n M-1 run-shell "sh ~/.tmux/plugins/opensessions/integrations/tmux-plugin/scripts/switch-index.sh 1"
+bind-key -n M-2 run-shell "sh ~/.tmux/plugins/opensessions/integrations/tmux-plugin/scripts/switch-index.sh 2"
+bind-key -n M-3 run-shell "sh ~/.tmux/plugins/opensessions/integrations/tmux-plugin/scripts/switch-index.sh 3"
+bind-key -n M-4 run-shell "sh ~/.tmux/plugins/opensessions/integrations/tmux-plugin/scripts/switch-index.sh 4"
+bind-key -n M-5 run-shell "sh ~/.tmux/plugins/opensessions/integrations/tmux-plugin/scripts/switch-index.sh 5"
+bind-key -n M-6 run-shell "sh ~/.tmux/plugins/opensessions/integrations/tmux-plugin/scripts/switch-index.sh 6"
+bind-key -n M-7 run-shell "sh ~/.tmux/plugins/opensessions/integrations/tmux-plugin/scripts/switch-index.sh 7"
+bind-key -n M-8 run-shell "sh ~/.tmux/plugins/opensessions/integrations/tmux-plugin/scripts/switch-index.sh 8"
+bind-key -n M-9 run-shell "sh ~/.tmux/plugins/opensessions/integrations/tmux-plugin/scripts/switch-index.sh 9"
 ```
 
 If opensessions is installed somewhere else, replace `~/.tmux/plugins/opensessions` with that checkout path.
@@ -153,14 +151,12 @@ status-position top
 Check opensessions key bindings:
 
 ```bash
-tmux list-keys -T root | rg "C-s|C-t|C-[1-9].*switch-index|M-[1-9].*switch-index"
+tmux list-keys -T root | rg "C-s|C-t|M-[1-9].*switch-index"
 ```
 
-You should see `C-s`, `C-t`, `C-1` through `C-9`, and `M-1` through `M-9`.
+You should see `C-s`, `C-t`, and `M-1` through `M-9`. You should not see `C-1` through `C-9` for opensessions.
 
 ## Terminal caveats
-
-Some terminals do not send distinct `Ctrl-1` through `Ctrl-9` key sequences. If `Ctrl-1` does nothing but `Alt-1` works, tmux is configured correctly and the terminal is not forwarding that key.
 
 If `Ctrl-s` appears to freeze terminal output, disable XON/XOFF flow control:
 

@@ -97,12 +97,15 @@ if [ -n "$PREFIX_KEY" ]; then
 fi
 
 # Direct no-prefix bindings for programmatic use (terminal emulator shortcuts).
-# C-s/C-t are single-byte Ctrl codes; C-1..9 and M-1..9 switch sidebar sessions.
-# Both are safe to send as text from terminal emulators without timing issues.
+# C-s/C-t are single-byte Ctrl codes; M-1..9 switches sidebar sessions.
+# These are safe to send as text from terminal emulators without timing issues.
 tmux bind-key -n C-s run-shell "sh '$SCRIPTS_DIR/focus.sh'"
 tmux bind-key -n C-t run-shell "sh '$SCRIPTS_DIR/toggle.sh'"
 for i in 1 2 3 4 5 6 7 8 9; do
-  tmux bind-key -n "C-$i" run-shell "sh '$SCRIPTS_DIR/switch-index.sh' $i"
+  existing_ctrl_binding=$(tmux list-keys -T root "C-$i" 2>/dev/null || true)
+  case "$existing_ctrl_binding" in
+    *switch-index.sh*) tmux unbind-key -n "C-$i" 2>/dev/null || true ;;
+  esac
   tmux bind-key -n "M-$i" run-shell "sh '$SCRIPTS_DIR/switch-index.sh' $i"
 done
 

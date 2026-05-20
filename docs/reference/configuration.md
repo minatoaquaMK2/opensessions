@@ -93,7 +93,6 @@ The plugin registers these no-prefix bindings automatically:
 | --- | --- |
 | `Ctrl-s` | Reveal and focus the sidebar |
 | `Ctrl-t` | Toggle the sidebar |
-| `Ctrl-1` through `Ctrl-9` | Switch to visible session by index |
 | `Alt-1` through `Alt-9` | Switch to visible session by index |
 
 It also registers these prefix command-table bindings:

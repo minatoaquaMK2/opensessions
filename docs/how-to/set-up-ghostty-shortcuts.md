@@ -2,7 +2,7 @@
 
 This guide shows how to add macOS-native keyboard shortcuts in [Ghostty](https://ghostty.org) that control the opensessions sidebar without leaving the keyboard.
 
-The opensessions tmux plugin registers a command table (`prefix o → s/t/e/1-9`) for manual use. It also registers no-prefix bindings (`C-s`, `C-t`, `C-1..9`, `M-1..9`) that terminal emulators can send programmatically. The `e` layout action is currently command-table only. The Ghostty config below uses those direct bindings so each shortcut is a single action.
+The opensessions tmux plugin registers a command table (`prefix o → s/t/e/1-9`) for manual use. It also registers no-prefix bindings (`C-s`, `C-t`, `M-1..9`) that terminal emulators can send programmatically. The `e` layout action is currently command-table only. The Ghostty config below uses those direct bindings so each shortcut is a single action.
 
 ## Prerequisites
 
