@@ -21,7 +21,6 @@ export type { AgentStatus, AgentLiveness, AgentEvent, PanePresenceInput } from "
 export { TERMINAL_STATUSES } from "./contracts/agent";
 export type { AgentWatcher, AgentWatcherContext, AgentThreadOwner } from "./contracts/agent-watcher";
 export { AgentTracker } from "./agents/tracker";
-export { AntigravityAgentWatcher } from "./agents/watchers/antigravity";
 export { AmpAgentWatcher } from "./agents/watchers/amp";
 export { ClaudeCodeAgentWatcher } from "./agents/watchers/claude-code";
 export { CodexAgentWatcher } from "./agents/watchers/codex";

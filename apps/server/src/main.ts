@@ -1,5 +1,4 @@
 import {
-  AntigravityAgentWatcher,
   AmpAgentWatcher,
   ClaudeCodeAgentWatcher,
   CodexAgentWatcher,
@@ -65,7 +64,6 @@ if (extraProviders.length > 0) {
   console.log(`Extra mux providers: ${extraProviders.map((provider) => provider.name).join(", ")}`);
 }
 
-loader.registerWatcher(new AntigravityAgentWatcher());
 loader.registerWatcher(new AmpAgentWatcher());
 loader.registerWatcher(new ClaudeCodeAgentWatcher());
 loader.registerWatcher(new CodexAgentWatcher());

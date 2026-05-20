@@ -1492,7 +1492,6 @@ export function startServer(mux: MuxProvider, extraProviders?: MuxProvider[], wa
   }
 
   const AGENT_TITLE_PATTERNS: Record<string, string[]> = {
-    antigravity: ["agy", "antigravity"],
     amp: ["amp"],
     "claude-code": ["claude"],
     codex: ["codex"],
@@ -2056,7 +2055,7 @@ export function startServer(mux: MuxProvider, extraProviders?: MuxProvider[], wa
         if (tracker.markSeen(cmd.name)) broadcastState();
         break;
       case "dismiss-agent":
-        if (tracker.dismiss(cmd.session, cmd.agent, cmd.threadId, cmd.paneId)) broadcastState();
+        if (tracker.dismiss(cmd.session, cmd.agent, cmd.threadId)) broadcastState();
         break;
       case "set-theme":
         currentTheme = cmd.theme;

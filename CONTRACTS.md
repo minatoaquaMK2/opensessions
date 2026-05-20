@@ -6,15 +6,7 @@ For end-user setup, start with the docs linked from [README.md](./README.md). Fo
 
 ## Built-In Watchers
 
-opensessions currently registers seven built-in watchers at server startup.
-
-### Antigravity CLI (`agy`)
-
-- Watches `~/.gemini/antigravity-cli/history.jsonl` and `~/.gemini/antigravity-cli/log/*.log` or `$ANTIGRAVITY_CLI_DIR`.
-- Polls every 2 seconds.
-- Resolves mux sessions from the `workspace` recorded in history entries.
-- Uses the `conversationId` as the thread id and the prompt display text as the thread name when available.
-- Treats prompt forwarding as `running`, response drip completion as `done`, and cancellation as `interrupted`.
+opensessions currently registers six built-in watchers at server startup.
 
 ### Amp
 

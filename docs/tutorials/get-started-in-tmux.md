@@ -112,12 +112,9 @@ Result: you should see the session list update and tmux switch the attached clie
 In any tmux session whose working directory matches a repo you use with a supported agent, start one of these tools:
 
 - Amp
-- Antigravity CLI (`agy`)
 - Claude Code
 - Codex
-- Devin
 - OpenCode
-- Pi
 
 Result: the session row should show a live status marker, and the detail panel should show thread-level information when available.
 

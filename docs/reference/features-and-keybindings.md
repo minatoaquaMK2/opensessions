@@ -103,7 +103,6 @@ Clicking a detected port opens `http://localhost:<port>`.
 - Git info is cached for 5 seconds.
 - Listening localhost ports are re-polled every 10 seconds while clients are connected.
 - Amp and Claude Code watchers poll every 2 seconds in addition to file watching.
-- Antigravity CLI polls every 2 seconds.
 - OpenCode polls every 3 seconds.
 
 ## Files And Paths The UI Depends On
